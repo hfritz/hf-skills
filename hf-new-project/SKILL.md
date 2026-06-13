@@ -34,69 +34,47 @@ Confirm the copy succeeded before continuing.
 
 ## Part 2 — Grilling session
 
-Now interview the user to understand the project. Ask one question at a time. After each question, wait for the answer before moving to the next. For each question, give your best recommended answer based on what you know so far — the user can accept, correct, or expand it.
+Your job is to interview the user relentlessly until you have a complete, unambiguous picture of the project. This is not a fixed questionnaire — it is a conversation that ends when you could write the spec yourself, not when a list of boxes is checked.
 
-Do not generate any files during this phase. Accumulate all answers first.
+Do not generate any files during this phase.
 
-### Question 1 — What is this?
+### Standing instructions (apply throughout the entire session)
 
-Ask for a one-sentence description of the project. Push for specificity. Vague answers like "a tool to help with X" should be sharpened: "Who uses it, when, and what do they walk away with?"
+- **One question at a time.** Never stack questions.
+- **Always give a recommended answer.** Let the user correct you rather than starting from blank.
+- **Sharpen fuzzy language immediately.** When the user says something vague or overloaded, stop and propose a precise restatement before moving on: "When you say 'dashboard' — do you mean a read-only summary view, or a place where users take action? Those have very different implications."
+- **Push back until it's specific.** If an answer is still vague after your restatement, push again. Don't move on until you could write that section of the spec without guessing.
+- **Walk down branches.** After each answer, ask: what does this imply? What new questions does it open? What decisions does it depend on? Resolve those before moving forward.
+- **Stress-test with concrete scenarios.** When a claim is made about how the product works, invent an edge case that probes it: "You said users can invite teammates — what happens if the invitee already has an account?"
+- **Resolve dependencies between decisions.** Surface when answers constrain each other: "You said this is a prototype, but you also mentioned needing auth — do you actually need auth for the prototype, or is that a later concern?"
 
-### Question 2 — Who is it for?
+### Topics to cover
 
-Ask who the primary user is. If it's a personal project for Helmut, confirm that. If it's for others, ask who specifically.
+Use these as a mental checklist. Reach them through the conversation — don't march through them in order.
 
-### Question 3 — What problem does it solve?
+- **What it is** — a single sharp sentence. Who uses it, when, and what do they walk away with?
+- **Who it's for** — primary user. If it's a personal tool for Helmut, confirm. If for others, who specifically?
+- **What problem it solves** — stated as a problem, not a solution. "What's wrong today, before this exists?"
+- **What success looks like** — the single most important signal this worked. Measurable beats qualitative.
+- **Project type** — Next.js web app, CLI/script, prototype, or other. This determines scaffolding and what files to generate.
+- **AI-powered?** — if yes: what is the AI doing? Generating, classifying, extracting, conversing, something else?
+- **Hard constraints** — deadlines, required tech, explicit out-of-scope items. Can be none.
+- **UI style** *(frontend/Next.js projects only)* — lock this before generating ui-spec.md. Ask one sub-question at a time:
+  - *Aesthetic mood:* offer four options with a best guess based on project type — Dark and mystical / Soft and ethereal / Clean and minimal / Bold and modern
+  - *Typography:* default guess is serif headings (Cormorant Garamond or Playfair Display) + sans-serif body (DM Sans or Inter) — confirm or redirect
+  - *Light or dark mode:* derive a default from the mood answer — confirm
+  - *Visual references (optional):* brand names or image uploads — skip if the user has nothing
 
-Ask what problem or friction the user currently experiences that this project removes. Push back on solutions stated as problems — if the answer describes the product, redirect: "What's wrong today, before this exists?"
+### When to stop
 
-### Question 4 — What does success look like?
+Stop when you could write every section of `specs/product-spec.md` without guessing:
+- The problem is stated in one unambiguous sentence
+- You know exactly who the user is and what they need
+- You have a measurable success signal
+- The scope boundary is clear — you know what this is NOT
+- For frontend projects: you have enough to write a full color token table and typography spec
 
-Ask for the single most important signal that this project worked. Measurable beats qualitative. If the answer is vague ("people find it useful"), push: "How would you know, six weeks from now, that building this was worth it?"
-
-### Question 5 — What kind of project is this?
-
-Ask which category fits best:
-- **Next.js web app** (includes any frontend with a backend)
-- **CLI tool or script**
-- **Experiment or prototype** (throwaway, fast validation)
-- **Other** (describe)
-
-This determines whether to scaffold and what goes in the tech stack.
-
-### Question 6 — Is it AI-powered?
-
-Ask if the project involves calling an LLM or building AI features. If yes, ask one follow-up: "What is the AI doing — generating content, classifying, extracting, conversing, something else?"
-
-### Question 7 — Any known constraints?
-
-Ask if there are hard constraints: a deadline, a specific tech requirement, things that are explicitly out of scope. This can be skipped if the user has nothing to add — offer: "Any hard constraints I should know about? Or shall we move on?"
-
-### Question 8 — UI style (only if Q5 is Next.js or a frontend project)
-
-Skip this question for CLI tools, scripts, or non-visual projects.
-
-Ask for the visual direction. Frame it as: "Before we scaffold, let's lock the UI style — it's faster to define it now than to override defaults later."
-
-Ask one sub-question at a time:
-
-**8a — Aesthetic mood:**
-Offer four options and give a best guess based on the project type:
-- Dark and mystical (deep purples, navy, gold, stars)
-- Soft and ethereal (lavender, blush, cream, airy gradients)
-- Clean and minimal (cream/greige, gold accents, gentle gradients, luxury wellness)
-- Bold and modern (high contrast, vivid accent, flat design)
-
-**8b — Typography:**
-My default guess: serif headings (Cormorant Garamond or Playfair Display) + clean sans-serif body (DM Sans or Inter). Confirm or redirect.
-
-**8c — Light or dark mode:**
-Default guess based on mood answer. Confirm.
-
-**8d — Reference apps or brands (optional):**
-Ask if there are any visual references. Accept image uploads or brand names. If the user has nothing, skip and proceed with best guess.
-
-Accumulate all answers before generating files.
+If you're not sure whether you have enough, keep going. A too-short grilling produces a vague spec.
 
 ---
 
@@ -241,10 +219,15 @@ Tell the user what was created and what's next:
 
 ## Grilling principles (from grill-with-docs)
 
-- One question at a time. Never stack questions.
-- Always give a recommended answer — let the user correct you rather than starting from blank.
-- Push back on fuzzy answers. Vague input produces vague specs.
-- Don't move on until an answer is specific enough to write down.
+The grilling session ends when you reach shared understanding — not when a question list runs out. The key behaviors:
+
+- One question at a time. Never stack.
+- Always give a recommended answer — let the user correct rather than starting from blank.
+- Sharpen fuzzy language immediately. Propose a precise restatement and ask if that's right.
+- Walk down branches. Each answer opens new questions — follow them before moving on.
+- Stress-test with scenarios. "If [edge case], what happens?" forces precision.
+- Resolve dependencies between decisions before moving forward.
+- Stop when you could write the spec without guessing, not when all topics are ticked.
 
 ## What goes in which file
 
