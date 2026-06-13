@@ -47,6 +47,8 @@ Do not generate any files during this phase.
 - **Walk down branches.** After each answer, ask: what does this imply? What new questions does it open? What decisions does it depend on? Resolve those before moving forward.
 - **Stress-test with concrete scenarios.** When a claim is made about how the product works, invent an edge case that probes it: "You said users can invite teammates — what happens if the invitee already has an account?"
 - **Resolve dependencies between decisions.** Surface when answers constrain each other: "You said this is a prototype, but you also mentioned needing auth — do you actually need auth for the prototype, or is that a later concern?"
+- **Track terms as they're defined.** When a domain term gets a precise meaning during the session, note it. These become the Glossary in the product spec.
+- **Track non-obvious decisions as they're made.** When a meaningful product decision is reached — especially one where alternatives were considered and rejected — note it. These become Key Decisions in the product spec. Only decisions that are hard to reconstruct later and that would surprise a future reader are worth capturing.
 
 ### Topics to cover
 
@@ -120,7 +122,7 @@ Overwrite `/Users/hfritz/code/<project-name>/CLAUDE.md`. Keep the structure of t
 
 - **Project description** — 2–3 sentences from Q1, Q2, Q3
 - **Role for Claude** — derive from project type (Q5) and whether it's AI-powered (Q6)
-- **Default reading list** — reference this project's own specs (include `specs/ui-spec.md` for frontend projects)
+- **Default reading list** — reference this project's own specs (include `specs/ui-spec.md` for frontend projects). Always include `specs/product-spec.md` first — it contains the Glossary and Key Decisions that define the project's language and founding choices.
 - **Tech stack** — from Q5/Q6 if known, otherwise TBD
 - **Key conventions** — leave as "TBD — to be added after technical spec is written"
 - **Hard rules** — leave as "TBD"
@@ -139,6 +141,8 @@ Overwrite `/Users/hfritz/code/<project-name>/specs/product-spec.md` using the te
 - **Jobs To Be Done** — derive one JTBD statement from Q2 + Q3 + Q4
 - **Success Metrics** — primary metric from Q4
 - **Assumptions** — surface 2–3 key assumptions implied by the answers
+- **Glossary** — every domain term that was defined or sharpened during the grilling. One term per entry: name, precise definition, and what it is NOT (if a distinction came up). Only terms that were ambiguous or non-obvious. Omit obvious words.
+- **Key Decisions** — non-obvious product decisions made during the session. Only include decisions where: alternatives were considered, the choice would surprise a future reader, and the reasoning would be hard to reconstruct. Format per entry: decision title, what was chosen, why, what was rejected and why not.
 
 Leave UX, Key Flows, and Requirements sections as stubs — they belong in a later spec pass or with the technical spec.
 
@@ -233,8 +237,8 @@ The grilling session ends when you reach shared understanding — not when a que
 
 - **README.md** — public-facing, minimal. Name, tagline, what it does, links to specs, tech stack, getting started.
 - **CLAUDE.md** — Claude's working brief for this project. Not public-facing. Tells Claude what the project is, what role to play, what to read first.
-- **specs/product-spec.md** — structured product thinking. Problem, users, goals, success metrics. Not implementation detail.
-- **specs/ui-spec.md** — visual design contract. Color tokens, typography, spacing, component patterns, motion, tone of voice. Written from Q8 answers. Used to configure Tailwind theme and shadcn before any UI code is written. Frontend projects only.
+- **specs/product-spec.md** — structured product thinking. Problem, users, goals, success metrics. Also contains the Glossary (precise domain terms agreed during the grill) and Key Decisions (non-obvious choices with their reasoning and rejected alternatives). This is the living language reference for the project — future Claude sessions should read it first.
+- **specs/ui-spec.md** — visual design contract. Color tokens, typography, spacing, component patterns, motion, tone of voice. Written from UI style answers. Used to configure Tailwind theme and shadcn before any UI code is written. Frontend projects only.
 - **specs/technical-spec.md** — NOT written by this skill. That's a separate step.
 
 ## Year
