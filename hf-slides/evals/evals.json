@@ -1,0 +1,61 @@
+{
+  "skill_name": "hf-slides",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Create a portfolio case study presentation for my Group Ordering project. Context: I was the lead PM. We unlocked B2B and office ordering on a food delivery platform. Results: AOV went from €28 to €44 (+57%), revenue per order up 83%, margin per order up 166%. I want a cover, a context slide explaining the situation, a slide on what we built, a results slide with the metrics, a learnings slide, and a closing slide. My name is Helmut Fritz.",
+      "expected_output": "A Google Slides presentation cloned from the personal template with 6-8 slides: cover with the project name and Helmut Fritz, context/situation slide, what-we-built content slide, a metrics/results slide featuring the key numbers, a learnings slide, and a closing. Brand voice is direct and evidence-led. Returns a shareable link.",
+      "files": [],
+      "expectations": [
+        "The presentation is created by cloning template 1f1t52kxB3satmCRLo1PxY4wywZSKFT4T5Np0t9WsOfo",
+        "The cover slide includes 'Group Ordering' as the title and 'Helmut Fritz' as the presenter",
+        "A context or situation slide explains the problem/opportunity",
+        "A results slide prominently features the three key metrics: AOV +57% (€28→€44), Revenue/order +83%, Margin/order +166%",
+        "A learnings or retrospective slide is included",
+        "A closing slide is included",
+        "Slide titles state conclusions, not topics (e.g. 'AOV grew 57% within 3 months' not 'Results')",
+        "All text uses sentence case — only first word and proper nouns capitalised",
+        "Active voice throughout: 'we built', 'the team shipped', not 'was built by'",
+        "A shareable Google Slides URL is returned"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Build me a 10-slide strategy pitch deck. The idea: I want to pitch a new product intelligence service for mid-size e-commerce companies. Problem: most mid-size e-commerce teams can't afford a full product analytics team, so they make gut-feel decisions. Solution: a lightweight AI-powered product analytics tool that gives weekly 'what happened and why' reports automatically. Target: 50–500 person e-commerce companies. Pricing: €299/month. I need a problem slide, solution slide, how it works, target market, competitive landscape, pricing, go-to-market plan, expected traction, and a closing with my contact.",
+      "expected_output": "A 10-11 slide pitch deck with a strong narrative arc: problem → solution → how it works → market → competition → pricing → go-to-market → traction → close. Direct, confident voice. Key metrics and comparisons where relevant. Returns a shareable link.",
+      "files": [],
+      "expectations": [
+        "The presentation is created by cloning the personal template",
+        "A cover slide names the product concept and Helmut Fritz",
+        "A problem slide leads with a concrete statement about the pain (not a vague topic header)",
+        "A solution slide describes the product offering clearly",
+        "A 'how it works' or product walkthrough slide is included",
+        "A target market or ICP slide is included with the 50-500 person e-commerce framing",
+        "A competitive landscape or positioning slide is included",
+        "A pricing slide shows the €299/month model",
+        "A go-to-market or traction slide is included",
+        "A closing slide includes contact info (helmut.fritz.v@gmail.com)",
+        "Slide titles are conclusions, not topics",
+        "All text uses sentence case",
+        "A shareable Google Slides URL is returned"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Quick 5-slide project update deck for a client. Project: onboarding flow redesign for a B2B SaaS product. Status: green. Completed: user research (12 interviews done), wireframes approved. In progress: frontend build (40% done). Blocked: waiting on final copy from the client's content team. Next steps: finish build by June 20, QA June 21-25, launch June 27. Keep it tight.",
+      "expected_output": "A concise 5-slide deck: cover, status overview (RAG green), completed work, in-progress + blockers, next steps / timeline. Tight and scannable copy. Returns a shareable link.",
+      "files": [],
+      "expectations": [
+        "The presentation is created by cloning the personal template",
+        "Cover slide names the project and Helmut Fritz",
+        "A status slide communicates the green RAG status clearly",
+        "Completed work (research + wireframes) is on a separate slide from next steps",
+        "The blocker (client content team) is called out explicitly",
+        "A next steps or timeline slide includes the key dates (June 20, 25, 27)",
+        "The deck is approximately 5 slides — not bloated",
+        "All text uses sentence case",
+        "A shareable Google Slides URL is returned"
+      ]
+    }
+  ]
+}
