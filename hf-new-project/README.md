@@ -11,11 +11,13 @@ This skill makes the thinking unavoidable.
 ## What it does
 
 1. **Copies product-base** — clones Helmut's personal project foundation into a new folder
-2. **Grills you on the project** — dynamic interview that pushes for precision: sharpens fuzzy language, stress-tests claims with edge cases, walks down decision branches, and captures a glossary of agreed terms and key decisions as they emerge
-3. **Generates four files** from your answers:
+2. **Grills you on the project** — dynamic interview that pushes for precision: sharpens fuzzy language, stress-tests claims with edge cases, walks down decision branches, and captures domain terms and key decisions as they emerge
+3. **Generates these files** from your answers:
+   - `CONTEXT.md` — standalone living glossary of domain terms defined during the session
    - `README.md` — public-facing project overview
    - `CLAUDE.md` — Claude's working brief for this project
-   - `specs/product-spec.md` — problem, users, goals, success metrics, glossary, and key decisions
+   - `specs/product-spec.md` — problem, users, goals, success metrics
+   - `docs/decisions/0001-*.md` — one file per non-obvious product decision (ADR format)
    - `specs/ui-spec.md` — full visual design contract (frontend projects only)
 4. **Inits a git repo** and makes the first commit
 5. **Optionally scaffolds** the app (Next.js, CLI, or other)
@@ -45,10 +47,15 @@ After the session, the new project folder contains:
 
 ```
 my-project/
+├── CONTEXT.md            ← living glossary of domain terms
 ├── README.md
 ├── CLAUDE.md
+├── docs/
+│   └── decisions/
+│       ├── 0001-*.md     ← one file per non-obvious product decision
+│       └── 0002-*.md
 └── specs/
-    ├── product-spec.md   ← problem, goals, glossary, key decisions
+    ├── product-spec.md   ← problem, users, goals, success metrics
     ├── ui-spec.md        ← color tokens, typography, spacing (frontend only)
     └── technical-spec.md ← stub, written separately
 ```

@@ -1,6 +1,6 @@
 ---
 name: hf-new-project
-description: Helmut's personal new-project bootstrap skill. Copies product-base, grills you on the project until the core is clear, then generates README.md, CLAUDE.md, specs/product-spec.md, and specs/ui-spec.md (for frontend projects) from your answers. Ends with git init and an optional scaffold prompt.
+description: Helmut's personal new-project bootstrap skill. Copies product-base, grills you on the project until the core is clear, then generates README.md, CLAUDE.md, CONTEXT.md, specs/product-spec.md, docs/decisions/ (one file per key decision), and specs/ui-spec.md (for frontend projects) from your answers. Ends with git init and an optional scaffold prompt.
 ---
 
 <what-to-do>
@@ -47,8 +47,8 @@ Do not generate any files during this phase.
 - **Walk down branches.** After each answer, ask: what does this imply? What new questions does it open? What decisions does it depend on? Resolve those before moving forward.
 - **Stress-test with concrete scenarios.** When a claim is made about how the product works, invent an edge case that probes it: "You said users can invite teammates — what happens if the invitee already has an account?"
 - **Resolve dependencies between decisions.** Surface when answers constrain each other: "You said this is a prototype, but you also mentioned needing auth — do you actually need auth for the prototype, or is that a later concern?"
-- **Track terms as they're defined.** When a domain term gets a precise meaning during the session, note it. These become the Glossary in the product spec.
-- **Track non-obvious decisions as they're made.** When a meaningful product decision is reached — especially one where alternatives were considered and rejected — note it. These become Key Decisions in the product spec. Only decisions that are hard to reconstruct later and that would surprise a future reader are worth capturing.
+- **Track terms as they're defined.** When a domain term gets a precise meaning during the session, note it. These become entries in `CONTEXT.md` — the project's standalone glossary.
+- **Track non-obvious decisions as they're made.** When a meaningful product decision is reached — especially one where alternatives were considered and rejected — note it. Each becomes its own file in `docs/decisions/`. Only capture decisions that are hard to reverse, would surprise a future reader, and resulted from a real trade-off between alternatives.
 
 ### Topics to cover
 
@@ -82,7 +82,7 @@ If you're not sure whether you have enough, keep going. A too-short grilling pro
 
 ## Part 3 — Generate files
 
-Once all questions are answered, generate the four files below. Write them directly into the new project folder. Tell the user: "Generating README.md, CLAUDE.md, specs/product-spec.md, and specs/ui-spec.md from your answers."
+Once all questions are answered, generate the files below. Write them directly into the new project folder. Tell the user which files you're about to create before you start.
 
 ### README.md
 
@@ -122,7 +122,7 @@ Overwrite `/Users/hfritz/code/<project-name>/CLAUDE.md`. Keep the structure of t
 
 - **Project description** — 2–3 sentences from Q1, Q2, Q3
 - **Role for Claude** — derive from project type (Q5) and whether it's AI-powered (Q6)
-- **Default reading list** — reference this project's own specs (include `specs/ui-spec.md` for frontend projects). Always include `specs/product-spec.md` first — it contains the Glossary and Key Decisions that define the project's language and founding choices.
+- **Default reading list** — always list in this order: `CONTEXT.md` first (shared language), then `specs/product-spec.md` (problem and goals), then `docs/decisions/` (founding choices), then any other specs. Include `specs/ui-spec.md` for frontend projects.
 - **Tech stack** — from Q5/Q6 if known, otherwise TBD
 - **Key conventions** — leave as "TBD — to be added after technical spec is written"
 - **Hard rules** — leave as "TBD"
@@ -141,12 +141,67 @@ Overwrite `/Users/hfritz/code/<project-name>/specs/product-spec.md` using the te
 - **Jobs To Be Done** — derive one JTBD statement from Q2 + Q3 + Q4
 - **Success Metrics** — primary metric from Q4
 - **Assumptions** — surface 2–3 key assumptions implied by the answers
-- **Glossary** — every domain term that was defined or sharpened during the grilling. One term per entry: name, precise definition, and what it is NOT (if a distinction came up). Only terms that were ambiguous or non-obvious. Omit obvious words.
-- **Key Decisions** — non-obvious product decisions made during the session. Only include decisions where: alternatives were considered, the choice would surprise a future reader, and the reasoning would be hard to reconstruct. Format per entry: decision title, what was chosen, why, what was rejected and why not.
 
 Leave UX, Key Flows, and Requirements sections as stubs — they belong in a later spec pass or with the technical spec.
 
 Set Status to `Draft`.
+
+Note: domain terms go in `CONTEXT.md`, not here. Key decisions go in `docs/decisions/`, not here. The product spec is for product thinking only.
+
+### CONTEXT.md
+
+Create `/Users/hfritz/code/<project-name>/CONTEXT.md`. This is the project's living glossary — pure domain terms, nothing else. No goals, no implementation details, no spec content.
+
+Write one entry per term that was defined or sharpened during the grilling. Use this format:
+
+```
+# Glossary
+
+_The shared language of this project. Update this file whenever a term is defined, renamed, or sharpened._
+
+## [Term]
+[Precise definition in one sentence]. **Not:** [what it is NOT — only if a distinction came up during the session].
+```
+
+Only include terms that were ambiguous, overloaded, or non-obvious. Skip words that any reader would understand the same way.
+
+If no domain terms emerged during the grilling, create the file with the header and a single line: `_No terms defined yet. Update as the project evolves._`
+
+### docs/decisions/
+
+Create a `docs/decisions/` folder. For each non-obvious product decision made during the session, write one file named `0001-<decision-slug>.md`, `0002-<decision-slug>.md`, etc.
+
+A decision is worth an ADR if all three are true:
+1. **Hard to reverse** — changing this later would be costly
+2. **Surprising without context** — a future reader would wonder "why did they do it this way?"
+3. **Real trade-off** — there were genuine alternatives and one was chosen for specific reasons
+
+Use this format for each file:
+
+```markdown
+# [Decision title]
+
+**Date:** [today's date]
+**Status:** Decided
+
+## Context
+[1–3 sentences: what situation or constraint led to this decision needing to be made]
+
+## Decision
+[What was chosen, stated plainly]
+
+## Reasoning
+[Why this option over the alternatives]
+
+## Alternatives considered
+- **[Alternative A]** — [why rejected]
+- **[Alternative B]** — [why rejected]
+
+## Consequences
+[What this means going forward — what it enables, what it rules out]
+```
+
+If no decisions during the grilling met all three criteria, skip this folder entirely. Do not create placeholder files.
 
 ### specs/ui-spec.md (only for frontend/Next.js projects)
 
@@ -211,7 +266,7 @@ If yes, ask which type (if not already clear from Q5):
 
 Tell the user what was created and what's next:
 
-> "Project `<name>` is initialized. Next step: write `specs/technical-spec.md` before building. For frontend projects, `specs/ui-spec.md` is ready — use it to configure Tailwind theme and shadcn tokens before writing any components. Run the agent review (`head-of-product-agent`, `engineering-agent`, `reviewer-agent`) to stress-test the specs before writing code."
+> "Project `<name>` is initialized. Files created: `CONTEXT.md` (glossary), `specs/product-spec.md`, [N] decision files in `docs/decisions/`[, `specs/ui-spec.md`] — plus README and CLAUDE.md. Next step: write `specs/technical-spec.md` before building. For frontend projects, `specs/ui-spec.md` is ready — use it to configure Tailwind theme and shadcn tokens before writing any components. Update `CONTEXT.md` whenever a new term is defined and add to `docs/decisions/` whenever a significant product decision is made."
 
 </what-to-do>
 
@@ -232,12 +287,15 @@ The grilling session ends when you reach shared understanding — not when a que
 - Stress-test with scenarios. "If [edge case], what happens?" forces precision.
 - Resolve dependencies between decisions before moving forward.
 - Stop when you could write the spec without guessing, not when all topics are ticked.
+- Capture terms → `CONTEXT.md`. Capture non-obvious decisions → `docs/decisions/`. Neither belongs in the product spec.
 
 ## What goes in which file
 
+- **CONTEXT.md** — the project's living glossary. Pure domain terms: name, precise definition, what it is NOT. No goals, no decisions, no implementation detail. Updated throughout the project's lifetime whenever a term is defined or sharpened. Read first by Claude at the start of every session.
 - **README.md** — public-facing, minimal. Name, tagline, what it does, links to specs, tech stack, getting started.
-- **CLAUDE.md** — Claude's working brief for this project. Not public-facing. Tells Claude what the project is, what role to play, what to read first.
-- **specs/product-spec.md** — structured product thinking. Problem, users, goals, success metrics. Also contains the Glossary (precise domain terms agreed during the grill) and Key Decisions (non-obvious choices with their reasoning and rejected alternatives). This is the living language reference for the project — future Claude sessions should read it first.
+- **CLAUDE.md** — Claude's working brief for this project. Not public-facing. Tells Claude what the project is, what role to play, what to read first (CONTEXT.md → product-spec → docs/decisions/).
+- **specs/product-spec.md** — structured product thinking only. Problem, users, goals, success metrics, JTBD, assumptions. No glossary, no decisions — those live in their own files.
+- **docs/decisions/** — one file per non-obvious product decision. Each file captures context, the decision, reasoning, alternatives rejected, and consequences. Added to over time — not just at bootstrap.
 - **specs/ui-spec.md** — visual design contract. Color tokens, typography, spacing, component patterns, motion, tone of voice. Written from UI style answers. Used to configure Tailwind theme and shadcn before any UI code is written. Frontend projects only.
 - **specs/technical-spec.md** — NOT written by this skill. That's a separate step.
 
