@@ -1,0 +1,177 @@
+#!/usr/bin/env node
+// gamma-cli — thin wrapper around the Gamma Generate API v1.0
+// Usage: gamma-cli <command> [options]
+
+const API_BASE = 'https://public-api.gamma.app/v1.0';
+const POLL_INTERVAL_MS = 5000;
+const MAX_POLLS = 60; // 5 min timeout
+
+function getApiKey() {
+  const key = process.env.GAMMA_API_KEY;
+  if (!key) {
+    fail('GAMMA_API_KEY environment variable not set. See conf/api-key-setup.md.');
+  }
+  return key;
+}
+
+function fail(msg) {
+  console.error(JSON.stringify({ ok: false, error: msg }));
+  process.exit(1);
+}
+
+function ok(result) {
+  console.log(JSON.stringify({ ok: true, result }, null, 2));
+}
+
+function parseArgs(argv) {
+  const args = {};
+  for (let i = 0; i < argv.length; i++) {
+    if (argv[i].startsWith('--')) {
+      const key = argv[i].slice(2);
+      const val = argv[i + 1] && !argv[i + 1].startsWith('--') ? argv[++i] : true;
+      args[key] = val;
+    }
+  }
+  return args;
+}
+
+async function apiRequest(method, path, body) {
+  const key = getApiKey();
+  const res = await fetch(`${API_BASE}${path}`, {
+    method,
+    headers: {
+      'X-API-KEY': key,
+      'Content-Type': 'application/json',
+    },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    fail(`API error ${res.status}: ${JSON.stringify(data)}`);
+  }
+  return data;
+}
+
+async function pollGeneration(generationId) {
+  for (let i = 0; i < MAX_POLLS; i++) {
+    const data = await apiRequest('GET', `/generations/${generationId}`);
+    if (data.status === 'completed') return data;
+    if (data.status === 'failed') fail(`Generation failed: ${JSON.stringify(data)}`);
+    await new Promise(r => setTimeout(r, POLL_INTERVAL_MS));
+  }
+  fail('Generation timed out after 5 minutes.');
+}
+
+const commands = {
+  // Create a presentation and wait for completion
+  // gamma-cli create --text "markdown" [--title "..."] [--format presentation] [--num-cards 10] [--theme <id>] [--tone "professional"] [--audience "executives"] [--dimensions 16x9]
+  async create(args) {
+    if (!args.text && !args['text-file']) {
+      fail('--text or --text-file is required');
+    }
+
+    let inputText = args.text;
+    if (args['text-file']) {
+      const fs = await import('fs');
+      inputText = fs.readFileSync(args['text-file'], 'utf8');
+    }
+
+    const body = {
+      inputText,
+      textMode: args['text-mode'] || 'preserve',
+      format: args.format || 'presentation',
+    };
+
+    if (args.title) body.title = args.title;
+    if (args['num-cards']) body.numCards = parseInt(args['num-cards'], 10);
+    if (args.theme) body.themeId = args.theme;
+    if (args['export-as']) body.exportAs = args['export-as'];
+
+    // Image options
+    const imageSource = args['image-source'] || 'webFreeToUseCommercially';
+    body.imageOptions = { source: imageSource };
+
+    // Text options
+    const textOpts = {};
+    if (args.tone) textOpts.tone = args.tone;
+    if (args.audience) textOpts.audience = args.audience;
+    if (Object.keys(textOpts).length > 0) body.textOptions = textOpts;
+
+    // Card options
+    if (args.dimensions) {
+      body.cardOptions = { dimensions: args.dimensions };
+    }
+
+    const { generationId } = await apiRequest('POST', '/generations', body);
+    process.stderr.write(`Generating... (id: ${generationId})\n`);
+
+    const result = await pollGeneration(generationId);
+    ok({
+      generationId,
+      gammaId: result.gammaId,
+      gammaUrl: result.gammaUrl,
+      exportUrl: result.exportUrl,
+      credits: result.credits,
+    });
+  },
+
+  // Check status of an existing generation
+  async status(args) {
+    const id = args._[0] || args.id;
+    if (!id) fail('Generation ID required: gamma-cli status <id>');
+    const data = await apiRequest('GET', `/generations/${id}`);
+    ok(data);
+  },
+
+  // List available themes
+  async themes() {
+    const data = await apiRequest('GET', '/themes');
+    ok(data);
+  },
+
+  // List workspace folders
+  async folders() {
+    const data = await apiRequest('GET', '/folders');
+    ok(data);
+  },
+};
+
+async function main() {
+  const [, , command, ...rest] = process.argv;
+  if (!command || command === '--help' || command === 'help') {
+    console.log(`gamma-cli <command> [options]
+
+Commands:
+  create      Generate a Gamma presentation (waits for completion)
+  status <id> Check generation status
+  themes      List available themes
+  folders     List workspace folders
+
+Create options:
+  --text <markdown>          Slide content as markdown (required, or --text-file)
+  --text-file <path>         Path to markdown file instead of inline text
+  --title <string>           Presentation title
+  --format <type>            presentation | document | webpage (default: presentation)
+  --text-mode <mode>         preserve | condense | generate (default: preserve)
+  --num-cards <n>            Number of slides (1-60)
+  --theme <themeId>          Theme ID from gamma-cli themes
+  --tone <string>            Writing tone (e.g. "professional")
+  --audience <string>        Target audience (e.g. "executives")
+  --dimensions <size>        16x9 | 4x3 | fluid (default: 16x9)
+  --image-source <source>    webFreeToUseCommercially | aiGenerated | noImages
+  --export-as <format>       pdf | pptx | png (optional auto-export)
+
+Environment:
+  GAMMA_API_KEY              Your Gamma API key (skgamma-...)
+`);
+    return;
+  }
+
+  const args = parseArgs(rest);
+  args._ = rest.filter(a => !a.startsWith('--'));
+
+  if (!commands[command]) fail(`Unknown command: ${command}`);
+  await commands[command](args);
+}
+
+main().catch(e => fail(e.message));
